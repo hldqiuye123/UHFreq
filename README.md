@@ -1,4 +1,4 @@
-This repository hosts the source code and data‐generation utilities for UHFreq.  
+This repository hosts the source code utilities for UHFreq.  
 The project is organised as follows:
 | Path | Purpose |
 |------|---------|
