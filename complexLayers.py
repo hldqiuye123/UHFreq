@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 19 10:30:02 2019
-@author: Sebastien M. Popoff
-Based on https://openreview.net/forum?id=H1T2hmZAb
-"""
 import torch.nn as nn
 import torch
 from torch.nn import Module, Parameter, init
