@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-@author: spopoff
-"""
-
 from torch.nn.functional import relu, max_pool2d, avg_pool2d, dropout, dropout2d
 import torch
 
