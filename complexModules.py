@@ -240,18 +240,27 @@ class FrequencyRepresentationModule(nn.Module):
 class ChannelAttention(nn.Module):
     def __init__(self, num_channels):
         super(ChannelAttention, self).__init__()
+        # Applies global average pooling over the temporal dimension to aggregate contextual information
         self.avg_pool = nn.AdaptiveAvgPool1d(1)
+        # Applies global max pooling over the temporal dimension to highlight prominent features
         self.max_pool = nn.AdaptiveMaxPool1d(1)
 
+        # First shared fully connected layer implemented as 1×1 convolution to reduce channel dimensionality
         self.fc1 = nn.Conv1d(num_channels, num_channels // 8, 1, bias=False)
         self.relu1 = nn.ReLU()
+        # Second shared fully connected layer to restore the original channel dimensionality
         self.fc2 = nn.Conv1d(num_channels // 8, num_channels, 1, bias=False)
 
     def forward(self, x):
+        # Channel attention map from average-pooled features
         avg_out = self.fc2(self.relu1(self.fc1(self.avg_pool(x))))
+        # Channel attention map from max-pooled features
         max_out = self.fc2(self.relu1(self.fc1(self.max_pool(x))))
+        # Aggregates both descriptors and applies sigmoid activation to obtain final attention weights
         out = avg_out + max_out
+        # Recalibrates the input features by channel-wise multiplication with the attention weights
         return x * torch.sigmoid(out)
+
 
 
 class ChannelAttention(nn.Module):
