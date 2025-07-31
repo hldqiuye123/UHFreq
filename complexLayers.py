@@ -8,31 +8,37 @@ from complexFunctions import complex_dropout, complex_dropout2d
 
 
 def apply_complex(conv_r, conv_i, input):
-    # 分别计算输出的实部和虚部
+    # Compute the real part of the output by applying convolution to the real and imaginary parts of the input tensor separately.
+    # Specifically, the real part is formed by subtracting the convolution result of the imaginary component from that of the real component.
     real_r = conv_r(input.real)
     imag_r = conv_i(input.imag)
     real = real_r - imag_r
-    
-    # 检查real是否包含NaN或无穷值
+
+    # Check for the presence of NaN (Not a Number) or infinite values in the real part after the convolutional transformation.
+    # These may indicate numerical instability or improper parameter initialization.
     if torch.any(torch.isnan(real)) or torch.any(torch.isinf(real)):
         raise ValueError(f"NaN or infinite value detected in real part after linear transformation: real_r={real_r}, imag_r={imag_r}")
 
+    # Compute the imaginary part of the output by convolving the imaginary component with conv_r and the real component with conv_i,
+    # then summing the results. This adheres to the standard definition of complex-valued convolution.
     imag_r = conv_r(input.imag)
     real_i = conv_i(input.real)
     imag = imag_r + real_i
-    
-    # 检查imag是否包含NaN或无穷值
+
+    # Validate the imaginary part for numerical consistency by checking for NaN or infinite values.
     if torch.any(torch.isnan(imag)) or torch.any(torch.isinf(imag)):
         raise ValueError(f"NaN or infinite value detected in imaginary part after linear transformation: imag_r={imag_r}, real_i={real_i}")
 
-    # 返回复数输出
+    # Stack the real and imaginary parts along the last dimension to form a two-channel tensor, 
+    # and convert it into a complex-valued tensor using PyTorch's view_as_complex function.
     complex_output = torch.view_as_complex(torch.stack((real, imag), dim=-1))
 
-    # 检查complex_output是否包含NaN或无穷值
+    # Final validation to ensure the reconstructed complex tensor does not contain invalid numerical entries.
     if torch.any(torch.isnan(complex_output)) or torch.any(torch.isinf(complex_output)):
         raise ValueError(f"NaN or infinite value detected in complex output: real={real}, imag={imag}")
 
     return complex_output
+
 
 
 class ComplexDropout(Module):
